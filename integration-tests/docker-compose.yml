@@ -1,0 +1,60 @@
+version: '3.7'
+
+services:
+  reverse-proxy:
+    image: nginx:stable-alpine
+    volumes:
+      - ../persistence-service/config/nginx/:/etc/nginx/conf.d/
+    ports:
+      - 80:80
+    depends_on:
+      - backend
+    networks:
+      web-services:
+        aliases:
+          - backend.${BACKEND_DOMAIN:-127-0-0-1.sslip.io}
+  db:
+    image: postgres:latest
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    networks:
+      - web-services
+
+  backend:
+    build: ../persistence-service/backend
+    restart: always
+    environment:
+      DB_HOST: db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    depends_on:
+      - db
+    networks:
+      - web-services
+
+  test:
+    container_name: persistence-service-test
+    build:
+      context: .
+      dockerfile: test-setup.Dockerfile
+    command: ["./scripts/run-all-tests.sh", reverse-proxy, ""]
+    environment:
+      TARGET_URL: reverse-proxy
+    volumes:
+      - ./results/:/results/
+    depends_on:
+      - reverse-proxy
+    networks:
+      - web-services
+        
+networks:
+  web-services:
+
+volumes:
+  postgres-data:
+
