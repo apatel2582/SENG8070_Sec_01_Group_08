@@ -1,8 +1,10 @@
+//entities/customerApi.ts
 import { Express, Request, Response } from "express";
 import { DataSource } from "typeorm"; // Make sure to import DataSource from the correct location
 import { Customer } from "./Customer";
+import { ICustomerApi } from "../interfaces";
 
-export default class CustomerApi {
+export default class CustomerApi implements ICustomerApi {
   #dataSource: DataSource;
   #express: Express;
 
@@ -10,19 +12,46 @@ export default class CustomerApi {
     this.#dataSource = dataSource;
     this.#express = express;
 
-    this.#express.get("/customers", this.getAllCustomers);
-    this.#express.get("/customers/:id", this.getCustomerById);
-    this.#express.post("/customers", this.createCustomer);
-    this.#express.put("/customers/:id", this.updateCustomer);
-    this.#express.delete("/customers/:id", this.deleteCustomer);
+    this.#express.get("/customers", this.getAllCustomersHTML);
+    this.#express.get("/api/customers", this.getAllCustomers);
+    this.#express.get("/api/customers/:id", this.getCustomerById);
+    this.#express.post("/api/customers", this.createCustomer);
+    this.#express.put("/api/customers/:id", this.updateCustomer);
+    this.#express.delete("/api/customers/:id", this.deleteCustomer);
   }
 
-  private getAllCustomers = async (_: Request, res: Response) => {
+  getAllCustomersHTML = async (_: Request, res: Response) => {
+    const customers = await this.#dataSource.manager.find(Customer);
+    let html = `<table border="1">
+                  <thead>
+                    <tr>
+                      <th>Customer ID</th>
+                      <th>Name</th>
+                      <th>Address</th>
+                      <th>Phone Number 1</th>
+                      <th>Phone Number 2</th>
+                    </tr>
+                  </thead>
+                  <tbody>`;
+    for (const customer of customers) {
+        html += `<tr>
+                  <td>${customer.customer_id}</td>
+                  <td>${customer.name}</td>
+                  <td>${customer.address}</td>
+                  <td>${customer.phone_number1}</td>
+                  <td>${customer.phone_number2 || 'N/A'}</td>
+                </tr>`;
+    }
+    html += `</tbody></table>`;
+    return res.send(html);
+  };
+
+  getAllCustomers = async (_: Request, res: Response) => {
     const customers = await this.#dataSource.manager.find(Customer);
     return res.json(customers);
   };
 
-  private getCustomerById = async (req: Request, res: Response) => {
+  getCustomerById = async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     const customer = await this.#dataSource.manager.findOne(Customer, { where: { customer_id: id } });
 
@@ -33,7 +62,7 @@ export default class CustomerApi {
     return res.json(customer);
   };
 
-  private createCustomer = async (req: Request, res: Response) => {
+  createCustomer = async (req: Request, res: Response) => {
     const { name, address, phone_number1, phone_number2 } = req.body;
     const customer = new Customer();
     customer.name = name;
@@ -52,7 +81,7 @@ export default class CustomerApi {
     return res.json({ id: customer.customer_id });
   };
 
-  private updateCustomer = async (req: Request, res: Response) => {
+  updateCustomer = async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     const customer = await this.#dataSource.manager.findOne(Customer, { where: { customer_id: id } });
 
@@ -74,7 +103,7 @@ export default class CustomerApi {
     return res.json({ success: true });
   };
 
-  private deleteCustomer = async (req: Request, res: Response) => {
+  deleteCustomer = async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     try {
       await this.#dataSource.manager.delete(Customer, id);

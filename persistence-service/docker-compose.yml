@@ -27,6 +27,7 @@ services:
   backend:
     build: backend
     restart: always
+    command: /start-migrate.sh
     environment:
       DB_HOST: ${DB_HOST}
       POSTGRES_USER: ${POSTGRES_USER}

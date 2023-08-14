@@ -1,4 +1,4 @@
-// index.ts
+// ./strategy/postgresql/entities/index.ts
 export { default as TruckApi } from "./truckApi";
 export { Truck } from "./Truck";
 

@@ -17,7 +17,8 @@ export class InitializeDatabase1691806121563 implements MigrationInterface {
                 }),
                 new TableColumn({
                     name: 'brand',
-                    type: 'varchar'
+                    type: 'varchar',
+                    length: '100'
                 }),
                 new TableColumn({
                     name: 'load',
@@ -36,10 +37,18 @@ export class InitializeDatabase1691806121563 implements MigrationInterface {
                     type: 'int',
                     default: 0
                 })
+            ],
+            checks: [
+                { expression: "year >= 1950 AND year <= 2023" },
+                { expression: "capacity BETWEEN 0 AND 16000" },
+                { expression: "load BETWEEN 0 AND 16000" },
+                { expression: "number_of_repairs BETWEEN 0 AND 199" }
             ]
         }), true);
-
         console.log('Trucks table created.');
+        // Reset auto-increment for truck_id to 1
+        await queryRunner.query(`ALTER SEQUENCE public.truck_truck_id_seq RESTART WITH 1;`);
+        console.log('Truck Id Auto Increment set to 1.');
 
         // Sample Data for Trucks
         await queryRunner.query(`
@@ -50,10 +59,12 @@ export class InitializeDatabase1691806121563 implements MigrationInterface {
             ('BrandD', 650, 1150, 2021, 1);
         `);
 
+        //Testing the trucks are really inside the database and their values
         const results = await queryRunner.query(`
             SELECT * FROM truck;
         `);
         console.log(results);
+
         // Employees Table
         await queryRunner.createTable(new Table({
             name: 'employee',
@@ -67,85 +78,98 @@ export class InitializeDatabase1691806121563 implements MigrationInterface {
                 }),
                 new TableColumn({
                     name: 'name',
-                    type: 'varchar'
+                    type: 'varchar',
+                    length: '100'
                 }),
                 new TableColumn({
                     name: 'surname',
-                    type: 'varchar'
+                    type: 'varchar',
+                    length: '100'
                 }),
                 new TableColumn({
                     name: 'seniority',
-                    type: 'varchar'
+                    type: 'varchar',
+                    length: '100'
                 }),
                 new TableColumn({
                     name: 'role',
-                    type: 'varchar'
+                    type: 'varchar',
+                    length: '100'
                 }),
                 new TableColumn({
                     name: 'category',
                     type: 'varchar',
-                    isNullable: true
+                    isNullable: true,
+                    length: '100'
                 }),
                 new TableColumn({
                     name: 'specialized_brand',
                     type: 'varchar',
-                    isNullable: true
+                    isNullable: true,
+                    length: '100'
                 })
             ]
         }), true);
-
         console.log('Employees table created.');
-
-        
+        // Reset auto-increment for employee_id to 1
+        await queryRunner.query(`ALTER SEQUENCE public.employee_employee_id_seq RESTART WITH 1;`);
+        console.log('Employee Id Auto Increment set to 1.');
         
         await queryRunner.query(`
-	    INSERT INTO employee (name, surname, seniority, role, category, specialized_brand) VALUES
-	    ('John', 'Doe', 'Senior', 'Driver', 'A', null),
-	    ('Jane', 'Smith', 'Junior', 'Driver', 'B', null),
-	    ('Alice', 'Johnson', 'Senior', 'Mechanic', null, 'BrandA'),
-	    ('Bob', 'Brown', 'Junior', 'Mechanic', null, 'BrandB');
-	`);
-	console.log('Sample data inserted into Employees table.');
+            INSERT INTO employee (name, surname, seniority, role, category, specialized_brand) VALUES
+            ('John', 'Doe', 'Senior', 'Driver', 'A', null),
+            ('Jane', 'Smith', 'Junior', 'Driver', 'B', null),
+            ('Alice', 'Johnson', 'Senior', 'Mechanic', null, 'BrandA'),
+            ('Bob', 'Brown', 'Junior', 'Mechanic', null, 'BrandB');
+        `);
+	    console.log('Sample data inserted into Employees table.');
 
-    // Customers Table
-    await queryRunner.createTable(new Table({
-        name: 'customer',
-        columns: [
-            new TableColumn({
-                name: 'customer_id',
-                type: 'int',
-                isPrimary: true,
-                isGenerated: true,
-                generationStrategy: 'increment'
-            }),
-            new TableColumn({
-                name: 'name',
-                type: 'text'
-            }),
-            new TableColumn({
-                name: 'address',
-                type: 'text'
-            }),
-            new TableColumn({
-                name: 'phone_number1',
-                type: 'text'
-            }),
-            new TableColumn({
-                name: 'phone_number2',
-                type: 'text',
-                isNullable: true
-            }),
-        ]
-    }), true);
-    console.log('Customer table created.');
+        // Customers Table
+        await queryRunner.createTable(new Table({
+            name: 'customer',
+            columns: [
+                new TableColumn({
+                    name: 'customer_id',
+                    type: 'int',
+                    isPrimary: true,
+                    isGenerated: true,
+                    generationStrategy: 'increment'
+                }),
+                new TableColumn({
+                    name: 'name',
+                    type: 'text',
+                    length: '100'
+                }),
+                new TableColumn({
+                    name: 'address',
+                    type: 'text',
+                    length: '300'
+                }),
+                new TableColumn({
+                    name: 'phone_number1',
+                    type: 'text',
+                    length: '13'
+                }),
+                new TableColumn({
+                    name: 'phone_number2',
+                    type: 'text',
+                    isNullable: true,
+                    length: '13'
+                }),
+            ]
+        }), true);
+        console.log('Customer table created.');
+        // Reset auto-increment for customer_id to 1
+        await queryRunner.query(`ALTER SEQUENCE public.customer_customer_id_seq RESTART WITH 1;`);
+        console.log('Customer Id Auto Increment set to 1.');
 
-    await queryRunner.query(`
-        INSERT INTO customer (name, address, phone_number1, phone_number2) VALUES
-        ('John Doe', '123 Main St', '555-1234', '555-5678'),
-        ('Jane Smith', '456 Elm St', '555-4321', null),
-        ('Sam Brown', '789 Oak St', '555-8765', '555-6543');
-    `);
-    console.log('Sample data inserted into Customer table.');
+        await queryRunner.query(`
+            INSERT INTO customer (name, address, phone_number1, phone_number2) VALUES
+            ('John Doe', '123 Main St', '555-1234', '555-5678'),
+            ('Jane Smith', '456 Elm St', '555-4321', null),
+            ('Sam Brown', '789 Oak St', '555-8765', '555-6543');
+        `);
+        console.log('Sample data inserted into Customer table.');
 
         // Repairs Table
         await queryRunner.createTable(new Table({
@@ -184,12 +208,16 @@ export class InitializeDatabase1691806121563 implements MigrationInterface {
                     referencedTableName: 'employee',
                     onDelete: 'CASCADE'
                 })
+            ],
+            checks: [
+                { expression: `"estimated_time" BETWEEN 0 AND 30` }
             ]
         }), true);
-
         console.log('Repairs table created.');
+        // Reset auto-increment for repair_id to 1
+        await queryRunner.query(`ALTER SEQUENCE public.repair_repair_id_seq RESTART WITH 1;`);
+        console.log('Repair Id Auto Increment set to 1.');
 
-        
         await queryRunner.query(`
             INSERT INTO repair (mechanic_id, truck_id, estimated_time) VALUES
             (1, 1, 2),   -- Assuming a mechanic with ID 1 and a truck with ID 1 exist in their respective tables
@@ -198,67 +226,71 @@ export class InitializeDatabase1691806121563 implements MigrationInterface {
             (2, 4, 2);   -- Assuming a truck with ID 4 exists
         `);
     
-	console.log('Sample data inserted into Repairs table.');
+	    console.log('Sample data inserted into Repairs table.');
 
+        // Shipments Table
+        await queryRunner.createTable(new Table({
+            name: 'shipment',
+            columns: [
+                new TableColumn({
+                    name: 'shipment_id',
+                    type: 'int',
+                    isPrimary: true,
+                    isGenerated: true,
+                    generationStrategy: 'increment'
+                }),
+                new TableColumn({
+                    name: 'customerCustomerId',
+                    type: 'int'
+                }),
+                new TableColumn({
+                    name: 'origin',
+                    type: 'text',
+                    length: '100'
+                }),
+                new TableColumn({
+                    name: 'destination',
+                    type: 'text',
+                    length: '100'
+                }),
+                new TableColumn({
+                    name: 'weight',
+                    type: 'int'
+                }),
+                new TableColumn({
+                    name: 'value',
+                    type: 'decimal',
+                    precision: 10,
+                    scale: 2
+                })
+            ],
+            foreignKeys: [
+                new TableForeignKey({
+                    columnNames: ['customerCustomerId'],
+                    referencedColumnNames: ['customer_id'],
+                    referencedTableName: 'customer',
+                    onDelete: 'CASCADE'
+                })
+            ],
+            checks: [
+                { expression: `"weight" >= 0 AND "weight" <= 50000` },
+                { expression: `"value" >= 0 AND "value" <= 500000` }
+            ]
+        }), true);
+        console.log('Shipments table created.');
+        // Reset auto-increment for shipment_id to 1
+        await queryRunner.query(`ALTER SEQUENCE public.shipment_shipment_id_seq RESTART WITH 1;`);
+        console.log('Shipment Id Auto Increment set to 1.');
 
-    // Shipments Table
-    await queryRunner.createTable(new Table({
-        name: 'shipment',
-        columns: [
-            new TableColumn({
-                name: 'shipment_id',
-                type: 'int',
-                isPrimary: true,
-                isGenerated: true,
-                generationStrategy: 'increment'
-            }),
-            new TableColumn({
-                name: 'customerCustomerId',
-                type: 'int'
-            }),
-            new TableColumn({
-                name: 'origin',
-                type: 'text'
-            }),
-            new TableColumn({
-                name: 'destination',
-                type: 'text'
-            }),
-            new TableColumn({
-                name: 'weight',
-                type: 'int'
-            }),
-            new TableColumn({
-                name: 'value',
-                type: 'decimal',
-                precision: 10,
-                scale: 2
-            })
-        ],
-        foreignKeys: [
-            new TableForeignKey({
-                columnNames: ['customerCustomerId'],
-                referencedColumnNames: ['customer_id'],
-                referencedTableName: 'customer',
-                onDelete: 'CASCADE'
-            })
-        ]
-    }), true);
-
-    console.log('Shipments table created.');
-
-        
-    await queryRunner.query(`
-        INSERT INTO shipment ("customerCustomerId", origin, destination, weight, value) VALUES
-        (1, 'New York', 'Los Angeles', 1000, 2000.50),
-        (1, 'Los Angeles', 'Chicago', 1100, 2100.75),
-        (1, 'Chicago', 'Houston', 1200, 2200.25),
-        (1, 'Houston', 'Phoenix', 1300, 2300.00),
-        (1, 'Phoenix', 'Philadelphia', 1400, 2400.50);
-    `);
-
-    console.log('Sample data inserted into Shipments table.');
-
+        await queryRunner.query(`
+            INSERT INTO shipment ("customerCustomerId", origin, destination, weight, value) VALUES
+            (1, 'New York', 'Los Angeles', 1000, 2000.50),
+            (1, 'Los Angeles', 'Chicago', 1100, 2100.75),
+            (1, 'Chicago', 'Houston', 1200, 2200.25),
+            (1, 'Houston', 'Phoenix', 1300, 2300.00),
+            (1, 'Phoenix', 'Philadelphia', 1400, 2400.50);
+        `);
+        console.log('Sample data inserted into Shipments table.');
 
         // Trips Table
         await queryRunner.createTable(new Table({
@@ -273,11 +305,13 @@ export class InitializeDatabase1691806121563 implements MigrationInterface {
                 }),
                 new TableColumn({
                     name: 'route_from',
-                    type: 'text'
+                    type: 'text',
+                    length: '100'
                 }),
                 new TableColumn({
                     name: 'route_to',
-                    type: 'text'
+                    type: 'text',
+                    length: '100'
                 }),
                 new TableColumn({
                     name: 'driver1EmployeeId',
@@ -323,8 +357,10 @@ export class InitializeDatabase1691806121563 implements MigrationInterface {
                 })
             ]
         }), true);
-
         console.log('Trips table created.');
+        // Reset auto-increment for trip_id to 1
+        await queryRunner.query(`ALTER SEQUENCE public.trip_trip_id_seq RESTART WITH 1;`);
+        console.log('Trip Id Auto Increment set to 1.');
         
         await queryRunner.query(`
             INSERT INTO trip (route_from, route_to, "driver1EmployeeId", "driver2EmployeeId", "shipmentShipmentId", "truckTruckId") VALUES
@@ -334,7 +370,6 @@ export class InitializeDatabase1691806121563 implements MigrationInterface {
             ('RouteD1', 'RouteD2', 1, 2, 4, 4);
         `);
         console.log('Sample data inserted into Trips table.');
-
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {

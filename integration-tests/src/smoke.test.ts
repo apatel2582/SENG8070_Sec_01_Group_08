@@ -1,15 +1,14 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
-const TARGET_URL = "http://127.0.0.1:8000";
+const gotourl = 'http://reverse-proxy/';
 
 describe("smoke", () => {
   it("persistence-service status is 200", async () => {
-    console.log(TARGET_URL);
-    const health = await axios.get(`${TARGET_URL}`);
-
+    console.log(gotourl);
+    let health;
+    health = await axios.get(`${gotourl}`);
+    console.log(health);
     console.log(health.status);
     expect(health.status).toBe(200);
   });
 });
-
-

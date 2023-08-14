@@ -1,8 +1,10 @@
+//entities/employeeApi.ts
 import { Express, Request, Response } from "express";
 import { DataSource } from "typeorm";
 import { Employee } from "./Employee"; // Adjust the import path if needed
+import { IEmployeeApi } from "../interfaces"; 
 
-export default class EmployeeApi {
+export default class EmployeeApi implements IEmployeeApi{
   #dataSource: DataSource;
   #express: Express;
 
@@ -10,19 +12,50 @@ export default class EmployeeApi {
     this.#dataSource = dataSource;
     this.#express = express;
 
-    this.#express.get("/employees", this.getAllEmployees);
-    this.#express.get("/employees/:id", this.getEmployeeById);
-    this.#express.post("/employees", this.createEmployee);
-    this.#express.put("/employees/:id", this.updateEmployee);
-    this.#express.delete("/employees/:id", this.deleteEmployee);
+    this.#express.get("/employees", this.getAllEmployeesHTML);
+    this.#express.get("/api/employees", this.getAllEmployees);
+    this.#express.get("/api/employees/:id", this.getEmployeeById);
+    this.#express.post("/api/employees", this.createEmployee);
+    this.#express.put("/api/employees/:id", this.updateEmployee);
+    this.#express.delete("/api/employees/:id", this.deleteEmployee);
   }
 
-  private getAllEmployees = async (_: Request, res: Response) => {
+  getAllEmployeesHTML = async (_: Request, res: Response) => {
+    const employees = await this.#dataSource.manager.find(Employee);
+    let html = `<table border="1">
+                  <thead>
+                    <tr>
+                      <th>Employee ID</th>
+                      <th>Name</th>
+                      <th>Surname</th>
+                      <th>Seniority</th>
+                      <th>Role</th>
+                      <th>Category</th>
+                      <th>Specialized Brand</th>
+                    </tr>
+                  </thead>
+                  <tbody>`;
+    for (const employee of employees) {
+        html += `<tr>
+                  <td>${employee.employee_id}</td>
+                  <td>${employee.name}</td>
+                  <td>${employee.surname}</td>
+                  <td>${employee.seniority}</td>
+                  <td>${employee.role}</td>
+                  <td>${employee.category || 'N/A'}</td>
+                  <td>${employee.specialized_brand || 'N/A'}</td>
+                </tr>`;
+    }
+    html += `</tbody></table>`;
+    return res.send(html);
+  };
+
+  getAllEmployees = async (_: Request, res: Response) => {
     const employees = await this.#dataSource.manager.find(Employee);
     return res.json(employees);
   };
 
-  private getEmployeeById = async (req: Request, res: Response) => {
+  getEmployeeById = async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     const employee = await this.#dataSource.manager.findOne(Employee, { where: { employee_id: id } });
     if (!employee) {
@@ -32,7 +65,7 @@ export default class EmployeeApi {
     return res.json(employee);
   };
 
-  private createEmployee = async (req: Request, res: Response) => {
+  createEmployee = async (req: Request, res: Response) => {
     const { body } = req;
     const employee = new Employee();
 
@@ -50,7 +83,7 @@ export default class EmployeeApi {
     return res.json({ id: employee.employee_id });
   };
 
-  private updateEmployee = async (req: Request, res: Response) => {
+  updateEmployee = async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     const employee = await this.#dataSource.manager.findOne(Employee, { where: { employee_id: id } });
     if (!employee) {
@@ -71,7 +104,7 @@ export default class EmployeeApi {
     return res.json({ success: true });
   };
 
-  private deleteEmployee = async (req: Request, res: Response) => {
+  deleteEmployee = async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     const employee = await this.#dataSource.manager.findOne(Employee, { where: { employee_id: id } });
     if (!employee) {

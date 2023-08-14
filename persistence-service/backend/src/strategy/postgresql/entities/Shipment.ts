@@ -1,9 +1,11 @@
 // entities/Shipment.ts
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, Check } from "typeorm";
 import { Customer } from "./Customer";
 import { Trip } from "./Trip";
 
 @Entity()
+@Check(`"weight" >= 0 AND "weight" <= 50000`) // Check constraint for weight
+@Check(`"value" >= 0 AND "value" <= 500000`)  // Check constraint for value
 export class Shipment {
   @PrimaryGeneratedColumn()
   shipment_id!: number;
@@ -12,10 +14,10 @@ export class Shipment {
   @Column({ name: 'customerCustomerId' })
   customer!: Customer;
 
-  @Column()
+  @Column({ length: 100 })
   origin!: string;
 
-  @Column()
+  @Column({ length: 100 })
   destination!: string;
 
   @Column()

@@ -1,3 +1,4 @@
+//entitites/tripApi.ts
 import { Express, Request, Response } from "express";
 import { DataSource } from "typeorm";
 import { Trip } from "./Trip";
@@ -5,8 +6,9 @@ import { Employee } from "./Employee";
 import { Shipment } from "./Shipment";
 import { Truck } from "./Truck";
 import { Customer } from "./Customer";
+import { ITripApi } from "../interfaces";
 
-export default class TripApi {
+export default class TripApi implements ITripApi{
   #dataSource: DataSource;
   #express: Express;
 
@@ -14,14 +16,103 @@ export default class TripApi {
     this.#dataSource = dataSource;
     this.#express = express;
 
-    this.#express.get("/trips", this.getAllTrips);
-    this.#express.get("/trips/:id", this.getTripById);
-    this.#express.post("/trips", this.createTrip);
-    this.#express.put("/trips/:id", this.updateTrip);
-    this.#express.delete("/trips/:id", this.deleteTrip);
+	this.#express.get("/trips", this.getAllTripsHTML);
+    this.#express.get("/api/trips", this.getAllTrips);
+    this.#express.get("/api/trips/:id", this.getTripById);
+    this.#express.post("/api/trips", this.createTrip);
+    this.#express.put("/api/trips/:id", this.updateTrip);
+    this.#express.delete("/api/trips/:id", this.deleteTrip);
   }
 
-	private getAllTrips = async (_: Request, res: Response) => {
+  getAllTripsHTML = async (_: Request, res: Response) => {
+    const trips = await this.#dataSource.manager.find(Trip, { 
+        relations: ["driver1", "driver2", "shipment", "truck", "shipment.customer"] 
+    });
+    let html = `<table border="1">
+                  <thead>
+                    <tr>
+                      <th>Trip ID</th>
+                      <th>Route From</th>
+                      <th>Route To</th>
+                      <th>Driver 1</th>
+                      <th>Driver 2</th>
+                      <th>Shipment Details</th>
+                      <th>Truck Details</th>
+                    </tr>
+                  </thead>
+                  <tbody>`;
+    for (const trip of trips) {
+        html += `<tr>
+                  <td>${trip.trip_id}</td>
+                  <td>${trip.route_from}</td>
+                  <td>${trip.route_to}</td>
+                  <td>${trip.driver1.name} ${trip.driver1.surname}</td>
+                  <td>${trip.driver2.name} ${trip.driver2.surname}</td>
+                  <td>
+                    <table border="1">
+                      <thead>
+                        <tr>
+                          <th>Shipment ID</th>
+                          <th>Origin</th>
+                          <th>Destination</th>
+                          <th>Customer Details</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>${trip.shipment.shipment_id}</td>
+                          <td>${trip.shipment.origin}</td>
+                          <td>${trip.shipment.destination}</td>
+                          <td>
+                            <table border="1">
+                              <thead>
+                                <tr>
+                                  <th>Customer ID</th>
+                                  <th>Name</th>
+                                  <th>Address</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td>${trip.shipment.customer.customer_id}</td>
+                                  <td>${trip.shipment.customer.name}</td>
+                                  <td>${trip.shipment.customer.address}</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                  <td>
+                    <table border="1">
+                      <thead>
+                        <tr>
+                          <th>Truck ID</th>
+                          <th>Brand</th>
+                          <th>Load</th>
+                          <th>Capacity</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>${trip.truck.truck_id}</td>
+                          <td>${trip.truck.brand}</td>
+                          <td>${trip.truck.load}</td>
+                          <td>${trip.truck.capacity}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>`;
+    }
+    html += `</tbody></table>`;
+    return res.send(html);
+  };
+
+
+	getAllTrips = async (_: Request, res: Response) => {
 	  const trips = await this.#dataSource.manager.find(Trip, {
 	    relations: ["driver1", "driver2", "shipment", "truck"] // Specify the relations you want to include
 	  });
@@ -29,7 +120,7 @@ export default class TripApi {
 	};
 
 
-	private getTripById = async (req: Request, res: Response) => {
+	getTripById = async (req: Request, res: Response) => {
 	  const id = parseInt(req.params.id);
 	  const trip = await this.#dataSource.manager.findOne(Trip, {
 	    where: { trip_id: id },
@@ -44,7 +135,7 @@ export default class TripApi {
 	};
 
 
-	private createTrip = async (req: Request, res: Response) => {
+	createTrip = async (req: Request, res: Response) => {
 	  const { route_from, route_to, driver1_id, driver2_id, shipment_id, truck_id } = req.body;
 
 
@@ -91,7 +182,7 @@ export default class TripApi {
 	};
 
 
-  private updateTrip = async (req: Request, res: Response) => {
+    updateTrip = async (req: Request, res: Response) => {
 	  const id = parseInt(req.params.id);
 	  const { route_from, route_to, driver1_id, driver2_id } = req.body;
 
@@ -136,7 +227,7 @@ export default class TripApi {
 	};
 
 
-  private deleteTrip = async (req: Request, res: Response) => {
+  deleteTrip = async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     try {
       await this.#dataSource.manager.delete(Trip, id);

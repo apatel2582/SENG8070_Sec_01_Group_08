@@ -1,11 +1,12 @@
-FROM node:lts
-ARG SERVICE_URL
+FROM node:lts-alpine
 
 WORKDIR /integration-tests
 
 COPY ./package*.json ./
 
 RUN npm ci
+
+RUN apk --no-cache add curl
 
 COPY . .
 

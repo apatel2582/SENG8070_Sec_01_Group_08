@@ -1,9 +1,9 @@
 import axios, { AxiosError } from "axios";
 
 describe("repair api", () => {
-  const repairUrl = "http://localhost:8000/api/repairs";
-  const employeeUrl = "http://localhost:8000/api/employees";
-  const truckUrl = "http://localhost:8000/api/trucks";
+  const repairUrl = "http://reverse-proxy/api/repairs";
+  const employeeUrl = "http://reverse-proxy/api/employees";
+  const truckUrl = "http://reverse-proxy/api/trucks";
   let createdRepairId: number;
   let mechanic_id: number;
   let truck_id: number;
@@ -85,9 +85,9 @@ describe("repair api", () => {
 
 
 describe("repair api - edge cases", () => {
-  const repairUrl = "http://localhost:8000/api/repairs";
-  const employeeUrl = "http://localhost:8000/api/employees";
-  const truckUrl = "http://localhost:8000/api/trucks";
+  const repairUrl = "http://reverse-proxy/api/repairs";
+  const employeeUrl = "http://reverse-proxy/api/employees";
+  const truckUrl = "http://reverse-proxy/api/trucks";
   let createdRepairId: number;
   let mechanic_id: number;
   let truck_id: number;
@@ -163,9 +163,9 @@ describe("repair api - edge cases", () => {
 });
 
 describe("repair api - negative tests", () => {
-  const repairUrl = "http://localhost:8000/api/repairs";
-  const employeeUrl = "http://localhost:8000/api/employees";
-  const truckUrl = "http://localhost:8000/api/trucks";
+  const repairUrl = "http://reverse-proxy/api/repairs";
+  const employeeUrl = "http://reverse-proxy/api/employees";
+  const truckUrl = "http://reverse-proxy/api/trucks";
   let createdRepairId: number;
   let mechanic_id: number;
   let truck_id: number;

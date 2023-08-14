@@ -2,7 +2,7 @@
 import axios, { AxiosError } from "axios";
 
 describe("truck api", () => {
-  const truckUrl = "http://localhost:8000/api/trucks";
+  const truckUrl = "http://reverse-proxy/api/trucks";
   let createdTruckId: number; // Explicitly specify the type here
 
   it("creates a new truck", async () => {
@@ -54,7 +54,7 @@ describe("truck api", () => {
 });
 
 describe("negative tests for createTruck", () => {
-  const truckUrl = "http://localhost:8000/api/trucks";
+  const truckUrl = "http://reverse-proxy/api/trucks";
 
   it("fails to create a truck with missing fields", async () => {
     const newTruck = {
@@ -96,7 +96,7 @@ describe("negative tests for createTruck", () => {
 });
 
 describe("edge cases for createTruck", () => {
-  const truckUrl = "http://localhost:8000/api/trucks";
+  const truckUrl = "http://reverse-proxy/api/trucks";
   let createdTruckId: number;
 
   it("creates a truck with edge values", async () => {
@@ -134,7 +134,7 @@ describe("edge cases for createTruck", () => {
 
 
 describe("negative tests for createTruck", () => {
-  const truckUrl = "http://localhost:8000/api/trucks";
+  const truckUrl = "http://reverse-proxy/api/trucks";
 
   it("fails to create a truck with invalid values", async () => {
     const truck = {

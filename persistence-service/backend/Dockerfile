@@ -4,6 +4,8 @@ WORKDIR /app
 
 COPY package*.json ./
 
+COPY start-migrate.sh /start-migrate.sh
+
 # Install the application dependencies
 RUN npm ci
 
@@ -12,7 +14,6 @@ COPY . .
 
 # Build the TypeScript application
 RUN npm run build
-
 
 RUN \
   apk add --update --virtual useradd-dep shadow && \
