@@ -8,6 +8,5 @@ module.exports = {
     "/node_modules/",
     ".*.snapshots.ts",
     "/dist/",
-    "src/strategy/flatfile/flatfileDb/",
   ],
 };

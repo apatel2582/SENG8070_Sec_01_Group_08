@@ -1,11 +1,11 @@
 import axios, {AxiosError} from "axios";
 
 describe("trip api", () => {
-  const truckUrl = "http://localhost:8000/api/trucks";
-  const employeeUrl = "http://localhost:8000/api/employees";
-  const customerUrl = "http://localhost:8000/api/customers";
-  const shipmentUrl = "http://localhost:8000/api/shipments";
-  const tripUrl = "http://localhost:8000/api/trips";
+  const truckUrl = "http://reverse-proxy/api/trucks";
+  const employeeUrl = "http://reverse-proxy/api/employees";
+  const customerUrl = "http://reverse-proxy/api/customers";
+  const shipmentUrl = "http://reverse-proxy/api/shipments";
+  const tripUrl = "http://reverse-proxy/api/trips";
   let createdTruckId: number;
   let createdDriver1Id: number;
   let createdDriver2Id: number;
@@ -117,11 +117,11 @@ describe("trip api", () => {
 });
 
 describe("trip api - edge cases", () => {
-  const truckUrl = "http://localhost:8000/api/trucks";
-  const employeeUrl = "http://localhost:8000/api/employees";
-  const customerUrl = "http://localhost:8000/api/customers";
-  const shipmentUrl = "http://localhost:8000/api/shipments";
-  const tripUrl = "http://localhost:8000/api/trips";
+  const truckUrl = "http://reverse-proxy/api/trucks";
+  const employeeUrl = "http://reverse-proxy/api/employees";
+  const customerUrl = "http://reverse-proxy/api/customers";
+  const shipmentUrl = "http://reverse-proxy/api/shipments";
+  const tripUrl = "http://reverse-proxy/api/trips";
   let createdTruckId: number;
   let createdDriver1Id: number;
   let createdDriver2Id: number;
@@ -236,11 +236,11 @@ describe("trip api - edge cases", () => {
 
 
 describe("trip api - negative tests", () => {
-  const truckUrl = "http://localhost:8000/api/trucks";
-  const employeeUrl = "http://localhost:8000/api/employees";
-  const customerUrl = "http://localhost:8000/api/customers";
-  const shipmentUrl = "http://localhost:8000/api/shipments";
-  const tripUrl = "http://localhost:8000/api/trips";
+  const truckUrl = "http://reverse-proxy/api/trucks";
+  const employeeUrl = "http://reverse-proxy/api/employees";
+  const customerUrl = "http://reverse-proxy/api/customers";
+  const shipmentUrl = "http://reverse-proxy/api/shipments";
+  const tripUrl = "http://reverse-proxy/api/trips";
   let createdTruckId: number;
   let createdDriver1Id: number;
   let createdDriver2Id: number;

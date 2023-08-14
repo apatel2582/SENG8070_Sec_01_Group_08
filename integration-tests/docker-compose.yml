@@ -27,6 +27,7 @@ services:
   backend:
     build: ../persistence-service/backend
     restart: always
+    command: /start-migrate.sh
     environment:
       DB_HOST: db
       POSTGRES_USER: ${POSTGRES_USER}
@@ -38,7 +39,7 @@ services:
       - web-services
 
   test:
-    container_name: persistence-service-test
+    container_name: INTEGRATION-TESTS
     build:
       context: .
       dockerfile: test-setup.Dockerfile
@@ -49,8 +50,10 @@ services:
       - ./results/:/results/
     depends_on:
       - reverse-proxy
+      - backend
     networks:
       - web-services
+      
         
 networks:
   web-services:

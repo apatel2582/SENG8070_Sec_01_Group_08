@@ -2,10 +2,17 @@
 
 set -e
 
+# Introduce a delay of 10 seconds
+echo "Waiting for 10 seconds to ensure backend is fully operational..."
+sleep 15
+
 URL=$1
 PORT=$2
 
 SERVICE_URL="$URL$PORT"
+export SERVICE_URL="$URL$PORT"
+echo "Service URL: $SERVICE_URL"
+
 
 filename="junit.xml"
 file="/results/$filename"

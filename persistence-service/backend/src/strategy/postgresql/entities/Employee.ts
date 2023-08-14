@@ -8,22 +8,22 @@ export class Employee {
   @PrimaryGeneratedColumn()
   employee_id!: number;
 
-  @Column()
+  @Column({ length: 100 })
   name!: string;
 
-  @Column()
+  @Column({ length: 100 })
   surname!: string;
 
-  @Column()
+  @Column({ length: 100 })
   seniority!: string;
 
-  @Column()
+  @Column({ length: 100 })
   role!: string; // Consider using an ENUM for Driver/Mechanic
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, length: 100 })
   category?: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, length: 100 })
   specialized_brand?: string;
 
   @OneToMany(() => Repair, (repair) => repair.mechanic)

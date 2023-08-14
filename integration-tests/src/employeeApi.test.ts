@@ -1,7 +1,7 @@
 import axios, { AxiosError } from "axios";
 
 describe("employee api", () => {
-  const employeeUrl = "http://localhost:8000/api/employees";
+  const employeeUrl = "http://reverse-proxy/api/employees";
   let createdEmployeeId: number;
 
   it("creates a new employee", async () => {
@@ -48,7 +48,7 @@ describe("employee api", () => {
 
 
 describe("employee api edge cases", () => {
-  const employeeUrl = "http://localhost:8000/api/employees";
+  const employeeUrl = "http://reverse-proxy/api/employees";
   let createdEmployeeIds: number[] = []; // This array will store the IDs of the created employees
 
   it("creates an employee with maximum allowed field lengths", async () => {
@@ -108,7 +108,7 @@ describe("employee api edge cases", () => {
 
 
 describe("employee api negative tests", () => {
-  const employeeUrl = "http://localhost:8000/api/employees";
+  const employeeUrl = "http://reverse-proxy/api/employees";
 
   it("fails to create an employee with overlength fields", async () => {
     const invalidEmployee = {

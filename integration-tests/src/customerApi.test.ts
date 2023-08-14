@@ -2,7 +2,7 @@
 import axios, { AxiosError } from "axios";
 
 describe("customer api", () => {
-  const customerUrl = "http://localhost:8000/api/customers";
+  const customerUrl = "http://reverse-proxy/api/customers";
   let createdCustomerId: number;
 
   it("creates a new customer", async () => {
@@ -67,7 +67,7 @@ describe("customer api", () => {
 
 
 describe("customer api - edge cases", () => {
-  const customerUrl = "http://localhost:8000/api/customers";
+  const customerUrl = "http://reverse-proxy/api/customers";
   let createdCustomerId: number;
 
   // Longest Valid Inputs
@@ -126,7 +126,7 @@ describe("customer api - edge cases", () => {
 });
 
 describe("customer api - negative tests", () => {
-  const customerUrl = "http://localhost:8000/api/customers";
+  const customerUrl = "http://reverse-proxy/api/customers";
   let createdCustomerId: number;
 
   // Missing Required Fields

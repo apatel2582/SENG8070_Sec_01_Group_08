@@ -1,8 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Check } from "typeorm";
 import { Truck } from "./Truck";
 import { Employee } from "./Employee";
 
 @Entity()
+@Check(`"estimated_time" >= 0 AND "estimated_time" <= 30`)
 export class Repair {
   @PrimaryGeneratedColumn()
   repair_id!: number;

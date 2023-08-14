@@ -9,10 +9,10 @@ export class Trip {
   @PrimaryGeneratedColumn()
   trip_id!: number;
 
-  @Column()
+  @Column({ length: 100 })
   route_from!: string;
 
-  @Column()
+  @Column({ length: 100 })
   route_to!: string;
 
   @ManyToOne(() => Employee, (employee) => employee.tripsAsDriver1)

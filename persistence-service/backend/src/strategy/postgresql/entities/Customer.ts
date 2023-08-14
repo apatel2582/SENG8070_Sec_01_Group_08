@@ -7,16 +7,16 @@ export class Customer {
   @PrimaryGeneratedColumn()
   customer_id!: number;
 
-  @Column()
+  @Column({ length: 100 })
   name!: string;
 
-  @Column()
+  @Column({ length: 300 })
   address!: string;
 
-  @Column()
+  @Column({ length: 13 })
   phone_number1!: string;
 
-  @Column({ nullable: true })
+  @Column({ length:13 , nullable: true })
   phone_number2?: string;
 
   @OneToMany(() => Shipment, (shipment) => shipment.customer)
